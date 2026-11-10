@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0c0e">
+<title>Mi credencial · Cineteca Trikles</title>
+<meta name="description" content="Consulta y guarda tu credencial con QR de Cineteca Trikles · La casa del arte.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.js"></script>
+<script src="comun.js"></script>
+<style>
+.hero{text-align:center;padding:34px 0 6px}
+.hero .t1{font-family:'Anton',sans-serif;font-size:44px;color:var(--oro);letter-spacing:.06em;line-height:1}
+.hero .t2{font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:var(--hueso);margin-top:8px}
+.hero .linea{width:90px;height:3px;background:var(--oro);margin:16px auto 0}
+.intro{text-align:center;color:var(--gris);font-size:15px;line-height:1.5;margin:18px 0 0}
+</style>
+</head>
+<body>
+<div id="loader"><div></div></div>
+<main class="wrap">
+  <div class="hero"><div class="t1">CINETECA TRIKLES</div><div class="t2">La casa del arte</div><div class="linea"></div></div>
+
+  <section id="vForm">
+    <p class="intro">Consulta tu <b style="color:var(--hueso)">credencial con QR</b>.<br>Preséntala en la entrada de Tlaxcala o Puebla.</p>
+    <div class="card">
+      <label for="cTel">Tu teléfono</label>
+      <input id="cTel" type="tel" inputmode="numeric" autocomplete="tel" placeholder="10 dígitos" maxlength="14">
+      <label for="cNac">Tu fecha de nacimiento</label>
+      <input id="cNac" type="date">
+      <button class="btn" onclick="verCredencial()">Ver mi credencial</button>
+      <div class="err" id="cErr"></div>
+    </div>
+    <p class="muted" style="text-align:center">¿Todavía no tienes credencial? Pídela en taquilla en tu próxima visita.</p>
+  </section>
+
+  <section id="vCred" class="hide">
+    <img id="credImg" class="cred-img" alt="Tu credencial de Cineteca Trikles">
+    <div class="btns"><button class="btn" onclick="guardar()">⬇️ Guardar imagen</button><button class="btn sec" onclick="compartir()">📤 Compartir</button></div>
+    <p class="muted" style="text-align:center;margin-top:14px">Tip: guárdala en tu galería para mostrarla aunque no tengas señal.</p>
+    <button class="btn sec" onclick="cerrar()">Salir</button>
+  </section>
+
+  <div class="foot">
+    <a href="aviso-privacidad.html">Aviso de privacidad</a> · <a href="staff.html">Equipo</a>
+  </div>
+</main>
+<script>
+let C = null, PNG = '';
+async function verCredencial() {
+  const telefono = $('#cTel').value.replace(/\D/g, ''), nacimiento = $('#cNac').value;
+  $('#cErr').textContent = '';
+  if (telefono.length < 10 || !nacimiento) { $('#cErr').textContent = 'Escribe tu teléfono (10 dígitos) y tu fecha de nacimiento.'; return; }
+  const r = await api('credencial', { telefono, nacimiento });
+  if (!r.ok) { $('#cErr').textContent = r.error; return; }
+  C = r.cliente;
+  cargando(true);
+  try { PNG = await dibujarCredencial(Object.assign({}, C)); } finally { cargando(false); }
+  $('#credImg').src = PNG;
+  $('#vForm').classList.add('hide'); $('#vCred').classList.remove('hide');
+  window.scrollTo(0, 0);
+}
+$('#cNac').addEventListener('keydown', e => { if (e.key === 'Enter') verCredencial(); });
+function guardar() { descargar(PNG, nombreArchivo(C)); }
+function compartir() { compartirImagen(PNG, nombreArchivo(C), 'Mi credencial de Cineteca Trikles'); }
+function cerrar() { C = null; PNG = ''; $('#credImg').removeAttribute('src'); $('#cTel').value = ''; $('#cNac').value = ''; $('#vCred').classList.add('hide'); $('#vForm').classList.remove('hide'); }
+</script>
+</body>
+</html>

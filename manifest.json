@@ -1,0 +1,9 @@
+{
+  "name": "Cineteca Trikles · Accesos",
+  "short_name": "Trikles Acceso",
+  "start_url": "staff.html",
+  "display": "standalone",
+  "background_color": "#0c0c0e",
+  "theme_color": "#0c0c0e",
+  "icons": [{ "src": "logo.jpeg", "sizes": "512x512", "type": "image/jpeg" }]
+}

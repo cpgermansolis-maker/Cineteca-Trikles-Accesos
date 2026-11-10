@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0c0e">
+<meta name="robots" content="noindex,nofollow">
+<title>Equipo · Cineteca Trikles Accesos</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="comun.js"></script>
+<style>
+.top{position:sticky;top:0;z-index:20;background:rgba(12,12,14,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--linea);display:flex;align-items:center;gap:10px;padding:10px 16px}
+.top .yo{flex:1;font-size:13px;line-height:1.2}
+.top .yo b{color:var(--oro);font-family:'Anton',sans-serif;font-weight:400;font-size:18px;letter-spacing:.04em}
+.top select{width:auto;padding:8px 10px;font-size:14px;border-radius:30px}
+.top button{background:none;border:1px solid var(--linea);color:var(--gris);border-radius:30px;padding:8px 12px;font:600 12px Montserrat}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--negro2);border-top:1px solid var(--linea);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{background:none;border:0;color:var(--gris);padding:10px 4px 12px;font:600 11px Montserrat;letter-spacing:.04em;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav.tabs button span{font-size:22px}
+nav.tabs button.on{color:var(--oro)}
+#lector{width:100%;border-radius:var(--r);overflow:hidden;background:#000}
+#lector video{border-radius:var(--r)}
+/* veredicto */
+.ver{border-radius:18px;overflow:hidden;margin:14px 0;border:1px solid var(--linea);background:var(--negro2)}
+.ver .banda{padding:18px 16px;text-align:center;font-family:'Anton',sans-serif;font-size:34px;letter-spacing:.04em;line-height:1.05;color:#fff}
+.ver.ok .banda{background:var(--verde)}
+.ver.no .banda{background:var(--rojo)}
+.ver .banda small{display:block;font:600 14px Montserrat;letter-spacing:.02em;margin-top:6px;opacity:.95}
+.aviso{margin:12px 14px 0;border-radius:12px;padding:14px;font-weight:700;font-size:15px;line-height:1.35;display:flex;gap:10px;align-items:flex-start}
+.aviso .ic{font-size:26px;line-height:1}
+.aviso.menor{background:#ffde59;color:#2a1d00;border:3px solid #d7263d;font-size:17px;animation:late 1s ease-in-out infinite alternate}
+.aviso.hora{background:#3a2a07;color:#ffd27a;border:1px solid var(--ambar)}
+@keyframes late{to{box-shadow:0 0 0 6px rgba(215,38,61,.35)}}
+.ver .cuerpo{padding:16px;text-align:center}
+.ver .foto{width:min(78vw,300px);aspect-ratio:1;object-fit:cover;border-radius:18px;border:4px solid var(--oro);display:block;margin:0 auto;background:var(--negro3)}
+.ver .sinfoto{display:flex;align-items:center;justify-content:center;font:90px Anton;color:var(--oro)}
+.ver .nom{font-family:'Anton',sans-serif;font-size:30px;line-height:1.1;margin-top:14px;text-transform:uppercase}
+.ver .edad{font-size:20px;font-weight:700;margin-top:6px}
+.ver .edad.menor{color:#ffde59}
+.pill{display:inline-block;padding:5px 12px;border-radius:30px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.pill.Activo{background:rgba(31,163,90,.18);color:#5be29a;border:1px solid #1fa35a}
+.pill.Bloqueado{background:rgba(215,38,61,.18);color:#ff8a95;border:1px solid #d7263d}
+.motivo{background:rgba(215,38,61,.12);border:1px solid rgba(215,38,61,.5);color:#ffb3bb;border-radius:12px;padding:12px;margin-top:12px;font-size:15px;text-align:left}
+.stats{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;margin-top:14px}
+.stats div{background:var(--negro3);border-radius:12px;padding:10px}
+.stats b{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:24px;color:var(--oro)}
+.stats span{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em}
+.stats .ult b{font-family:Montserrat;font-weight:700;font-size:14px;padding:5px 0}
+.datos{text-align:left;margin-top:14px;border-top:1px solid var(--linea)}
+.datos div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--linea);font-size:14px}
+.datos div span:first-child{color:var(--gris);flex:none}
+.datos div span:last-child{text-align:right;word-break:break-word}
+/* búsqueda / lista */
+.item{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--negro2);border:1px solid var(--linea);border-radius:12px;margin-top:8px;cursor:pointer}
+.item .n{flex:1;font-weight:600}
+.item .n small{display:block;color:var(--gris);font-weight:500;margin-top:2px}
+.hora{font-family:'Anton',sans-serif;color:var(--oro);font-size:20px;min-width:56px}
+/* foto del registro */
+.fotobox{display:flex;gap:14px;align-items:center}
+.fotobox .prev{width:110px;height:110px;border-radius:14px;background:var(--negro3);border:2px dashed var(--linea);object-fit:cover;flex:none;display:flex;align-items:center;justify-content:center;color:var(--gris);font-size:34px}
+.fotobox .bs{flex:1}
+.fotobox .btn{margin-top:6px;padding:12px}
+/* modales */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px}
+.modal .caja{width:100%;max-width:480px;margin:auto 0}
+#camVideo{width:100%;border-radius:16px;background:#000;transform:scaleX(-1)}
+#camVideo.trasera{transform:none}
+.cnt{font-family:'Anton',sans-serif;font-size:44px;color:var(--oro);line-height:1}
+</style>
+</head>
+<body>
+<div id="loader"><div></div></div>
+
+<!-- ============ ENTRADA DEL EQUIPO ============ -->
+<section id="vLogin" class="wrap hide">
+  <div class="brand"><div class="t1">CINETECA TRIKLES</div><div class="t2">Equipo · Control de acceso</div></div>
+  <div class="card">
+    <label for="lNombre">Tu nombre</label>
+    <input id="lNombre" autocomplete="username" placeholder="Como aparece en la hoja Equipo">
+    <label for="lPin">PIN</label>
+    <input id="lPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••">
+    <label for="lSede">¿En qué sede estás hoy?</label>
+    <select id="lSede"><option>Tlaxcala</option><option>Puebla</option></select>
+    <button class="btn" onclick="entrar()">Entrar</button>
+    <div class="err" id="lErr"></div>
+  </div>
+  <div class="foot"><a href="index.html">← Mi credencial (clientes)</a></div>
+</section>
+
+<!-- ============ APP DEL EQUIPO ============ -->
+<section id="vApp" class="hide">
+  <div class="top">
+    <div class="yo">Hola, <b id="yoNombre"></b><br><span class="muted">Sesión de 12 horas</span></div>
+    <select id="yoSede" onchange="cambiarSede(this.value)" aria-label="Sede"><option>Tlaxcala</option><option>Puebla</option></select>
+    <button onclick="salir()">Salir</button>
+  </div>
+
+  <div class="wrap">
+    <!-- ESCANEAR -->
+    <div id="tEscanear" class="tab">
+      <div class="sec-t">Escanear acceso</div>
+      <p class="muted" style="margin:0 0 10px">Apunta la cámara al QR de la credencial.</p>
+      <div id="lector"></div>
+      <button class="btn" id="bCam" onclick="toggleCamara()">📷 Abrir cámara</button>
+      <div class="card" style="padding:12px 14px">
+        <label for="manualId" style="margin-top:0">¿No lee el QR? Escribe el número</label>
+        <div style="display:flex;gap:8px"><input id="manualId" placeholder="CT-XXXXXX" style="text-transform:uppercase" autocapitalize="characters">
+          <button class="btn" style="width:auto;margin:0;padding:0 18px" onclick="consultar($('#manualId').value)">Ver</button></div>
+      </div>
+      <div id="resultado"></div>
+    </div>
+
+    <!-- REGISTRAR / EDITAR -->
+    <div id="tRegistrar" class="tab hide">
+      <div class="sec-t" id="fTitulo">Registrar cliente nuevo</div>
+      <p class="muted" id="fSub" style="margin:0">Llena los datos junto con el cliente.</p>
+      <div class="card">
+        <label>Foto del cliente</label>
+        <div class="fotobox">
+          <div class="prev" id="fFotoPrev">👤</div>
+          <div class="bs">
+            <button class="btn" type="button" onclick="abrirCamaraFoto()">📸 Tomar foto</button>
+            <button class="btn sec" type="button" onclick="$('#fFotoFile').click()">Subir foto</button>
+            <input id="fFotoFile" type="file" accept="image/*" class="hide" onchange="fotoDeArchivo(this)">
+          </div>
+        </div>
+        <label for="f_nombre">Nombre completo *</label><input id="f_nombre" autocomplete="off">
+        <div class="fila">
+          <div><label for="f_fecha_nacimiento">Fecha de nacimiento *</label><input id="f_fecha_nacimiento" type="date"></div>
+          <div><label for="f_telefono">Teléfono *</label><input id="f_telefono" type="tel" inputmode="numeric" placeholder="10 dígitos" maxlength="14"></div>
+        </div>
+        <label for="f_residencia">Lugar de residencia</label><input id="f_residencia" placeholder="Municipio / ciudad">
+        <div class="fila">
+          <div><label for="f_contacto_emergencia">Contacto de emergencia</label><input id="f_contacto_emergencia" placeholder="Nombre"></div>
+          <div><label for="f_tel_emergencia">Tel. de emergencia</label><input id="f_tel_emergencia" type="tel" inputmode="numeric" placeholder="10 dígitos" maxlength="14"></div>
+        </div>
+        <label for="f_musica">Música favorita</label><input id="f_musica">
+        <label for="f_eventos">Eventos que le gustan</label><input id="f_eventos" placeholder="Cine de terror, conciertos, catas…">
+        <label for="f_comidas">Comidas favoritas</label><input id="f_comidas">
+        <label for="f_notas">Notas internas (no las ve el cliente)</label><textarea id="f_notas"></textarea>
+        <div class="check" id="fAvisoBox"><input type="checkbox" id="fAviso">
+          <label for="fAviso" style="all:unset;font-size:14px;line-height:1.4">El cliente acepta el <a href="aviso-privacidad.html" target="_blank">aviso de privacidad</a> *</label></div>
+        <button class="btn" id="fGuardar" onclick="guardarCliente()">Guardar y generar credencial</button>
+        <button class="btn sec hide" id="fCancelar" onclick="cancelarEdicion()">Cancelar edición</button>
+        <div class="err" id="fErr"></div>
+      </div>
+    </div>
+
+    <!-- BUSCAR -->
+    <div id="tBuscar" class="tab hide">
+      <div class="sec-t">Buscar cliente</div>
+      <p class="muted" style="margin:0 0 6px">Por nombre, teléfono o número de cliente.</p>
+      <input id="qBuscar" placeholder="Ej. Ana López · 246 123 4567" oninput="buscarDiferido()" autocomplete="off">
+      <div id="bResultados"></div>
+      <div id="ficha"></div>
+    </div>
+
+    <!-- ENTRADAS DE HOY -->
+    <div id="tHoy" class="tab hide">
+      <div class="sec-t">Entradas del día</div>
+      <div class="fila">
+        <div><label for="hSede">Sede</label><select id="hSede" onchange="cargarHoy()"><option>Tlaxcala</option><option>Puebla</option><option>Todas</option></select></div>
+        <div><label for="hFecha">Fecha</label><input id="hFecha" type="date" onchange="cargarHoy()"></div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:14px"><div class="cnt" id="hTotal">0</div><div class="muted" id="hTxt">entradas</div></div>
+      <div id="hLista"></div>
+      <button class="btn sec" onclick="cargarHoy()">↻ Actualizar</button>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button data-t="tEscanear" onclick="tab('tEscanear')" class="on"><span>📷</span>Escanear</button>
+    <button data-t="tRegistrar" onclick="tab('tRegistrar')"><span>➕</span>Registrar</button>
+    <button data-t="tBuscar" onclick="tab('tBuscar')"><span>🔎</span>Buscar</button>
+    <button data-t="tHoy" onclick="tab('tHoy')"><span>📋</span>Hoy</button>
+  </nav>
+</section>
+
+<!-- cámara para la foto -->
+<div class="modal hide" id="mCam">
+  <div class="caja card">
+    <div class="sec-t">Foto del cliente</div>
+    <video id="camVideo" autoplay playsinline muted></video>
+    <div class="btns"><button class="btn sec" onclick="voltearCamara()">🔄 Voltear</button><button class="btn" onclick="capturarFoto()">📸 Tomar</button></div>
+    <button class="btn sec" onclick="cerrarCamaraFoto()">Cancelar</button>
+  </div>
+</div>
+
+<!-- credencial -->
+<div class="modal hide" id="mCred">
+  <div class="caja">
+    <img id="credImg" class="cred-img" alt="Credencial del cliente">
+    <div class="btns"><button class="btn" onclick="credDescargar()">⬇️ Guardar imagen</button><button class="btn sec" onclick="credCompartir()">📤 Compartir</button></div>
+    <a class="btn wa" id="credWa" target="_blank" rel="noopener">💬 Mandar por WhatsApp al cliente</a>
+    <button class="btn sec" onclick="$('#mCred').classList.add('hide')">Cerrar</button>
+  </div>
+</div>
+
+<script>
+const SKEY = 'acc_sesion';
+let S = null;                // sesión: {token, nombre, sede, exp}
+let editandoId = null;       // id del cliente que se está editando (null = registro nuevo)
+let fotoNueva = '';          // dataURL de la foto tomada/subida
+let credActual = null, credPng = '';
+let lector = null, camAbierta = false, procesando = false;
+const CAMPOS = ['nombre', 'fecha_nacimiento', 'residencia', 'telefono', 'tel_emergencia', 'contacto_emergencia', 'musica', 'eventos', 'comidas', 'notas'];
+const URL_CREDENCIAL = new URL('index.html', location.href).href;
+
+/* ---------- sesión ---------- */
+function iniciar() {
+  try { S = JSON.parse(localStorage.getItem(SKEY) || 'null'); } catch (_) { S = null; }
+  if (S && S.exp > Date.now()) mostrarApp(); else { S = null; mostrarLogin(); }
+  $('#hFecha').value = partesMx().fecha;
+}
+function mostrarLogin(msg) {
+  $('#vApp').classList.add('hide'); $('#vLogin').classList.remove('hide');
+  $('#lErr').textContent = msg || '';
+  try { const u = localStorage.getItem('acc_ultimo'); if (u) { const o = JSON.parse(u); $('#lNombre').value = o.n || ''; $('#lSede').value = o.s || 'Tlaxcala'; } } catch (_) { }
+}
+function mostrarApp() {
+  $('#vLogin').classList.add('hide'); $('#vApp').classList.remove('hide');
+  $('#yoNombre').textContent = S.nombre; $('#yoSede').value = S.sede; $('#hSede').value = S.sede;
+}
+async function entrar() {
+  const nombre = $('#lNombre').value.trim(), pin = $('#lPin').value.trim(), sede = $('#lSede').value;
+  if (!nombre || !pin) { $('#lErr').textContent = 'Escribe tu nombre y tu PIN.'; return; }
+  const r = await api('login', { nombre, pin, sede });
+  if (!r.ok) { $('#lErr').textContent = r.error; return; }
+  S = { token: r.token, nombre: r.nombre, sede: r.sede, exp: r.exp };
+  localStorage.setItem(SKEY, JSON.stringify(S));
+  localStorage.setItem('acc_ultimo', JSON.stringify({ n: r.nombre, s: r.sede }));
+  $('#lPin').value = '';
+  mostrarApp();
+}
+$('#lPin').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+function salir() { pararCamara(); localStorage.removeItem(SKEY); S = null; mostrarLogin(); }
+window.alExpirar = msg => { pararCamara(); localStorage.removeItem(SKEY); S = null; mostrarLogin(msg); };
+function cambiarSede(v) { S.sede = v; localStorage.setItem(SKEY, JSON.stringify(S)); $('#hSede').value = v; toast('Sede: ' + v); }
+function staff(action, datos, opts) { return api(action, Object.assign({ token: S && S.token, sede: S && S.sede }, datos || {}), opts); }
+
+/* ---------- pestañas ---------- */
+function tab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hide', t.id !== id));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
+  if (id !== 'tEscanear') pararCamara();
+  if (id === 'tHoy') cargarHoy();
+  if (id === 'tBuscar') setTimeout(() => $('#qBuscar').focus(), 50);
+  window.scrollTo(0, 0);
+}
+
+/* ---------- escanear ---------- */
+async function toggleCamara() { camAbierta ? pararCamara() : abrirLector(); }
+async function abrirLector() {
+  $('#resultado').innerHTML = '';
+  if (!lector) lector = new Html5Qrcode('lector');
+  try {
+    await lector.start({ facingMode: 'environment' }, { fps: 10, qrbox: (w, h) => { const m = Math.floor(Math.min(w, h) * 0.75); return { width: m, height: m }; } },
+      txt => { if (procesando) return; procesando = true; pararCamara(); consultar(txt).finally(() => procesando = false); }, () => { });
+    camAbierta = true; $('#bCam').textContent = '⏹ Detener cámara'; $('#bCam').classList.add('sec');
+  } catch (e) {
+    console.error(e);
+    toast('No se pudo abrir la cámara. Revisa que el navegador tenga permiso de usarla.', 4000);
+  }
+}
+function pararCamara() {
+  if (lector && camAbierta) { lector.stop().catch(() => { }); }
+  camAbierta = false; const b = $('#bCam'); if (b) { b.textContent = '📷 Abrir cámara'; b.classList.remove('sec'); }
+}
+async function consultar(txt) {
+  txt = String(txt || '').trim();
+  if (!txt) return;
+  const r = await staff('escanear', { id: txt });
+  if (!r.ok) { $('#resultado').innerHTML = '<div class="err">' + esc(r.error || r.msg || 'Error') + '</div>'; return; }
+  if (navigator.vibrate) navigator.vibrate(r.existe && r.cliente.estatus === 'Activo' ? 120 : [200, 100, 200]);
+  if (!r.existe) {
+    $('#resultado').innerHTML = `<div class="ver no"><div class="banda">⛔ ACCESO DENEGADO<small>Este QR no está registrado${r.id ? ' (' + esc(r.id) + ')' : ''}</small></div>
+      <div class="cuerpo"><p class="muted">Puede ser una credencial falsa o de otro lugar. Si la persona dice que sí está registrada, búscala por nombre o teléfono.</p>
+      <button class="btn sec" onclick="tab('tBuscar')">🔎 Buscar por nombre</button><button class="btn" onclick="abrirLector()">📷 Escanear otro</button></div></div>`;
+  } else {
+    $('#resultado').innerHTML = veredicto(r, 'escanear');
+  }
+  $('#resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* Tarjeta grande con foto, nombre, edad, estatus y avisos. modo: 'escanear' | 'ficha' */
+function veredicto(r, modo) {
+  const c = r.cliente, activo = c.estatus !== 'Bloqueado';
+  const edad = c.edad != null ? c.edad : edadDe(c.fecha_nacimiento);
+  const menor = edad != null && edad < 18;
+  const hora = partesMx().hora, tarde = hora >= 22 || hora < 6;
+  const ini = String(c.nombre || '?').split(' ').filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+  let h = `<div class="ver ${activo ? 'ok' : 'no'}">`;
+  h += activo ? `<div class="banda">✅ ACCESO PERMITIDO<small>Cliente activo</small></div>`
+              : `<div class="banda">⛔ ACCESO DENEGADO<small>Cliente bloqueado</small></div>`;
+  if (menor) h += `<div class="aviso menor"><span class="ic">🔞</span><div>¡MENOR DE EDAD! Tiene ${edad} años.<br>La Cineteca es para mayores de 18 y aquí se vende alcohol.</div></div>`;
+  if (tarde) h += `<div class="aviso hora"><span class="ic">🕙</span><div>Son más de las 10 PM (hora de México). Después de las 10 PM ya no hay acceso. Tú decides.</div></div>`;
+  h += `<div class="cuerpo">`;
+  h += c.foto ? `<img class="foto" src="${c.foto}" alt="Foto de ${esc(c.nombre)}">` : `<div class="foto sinfoto">${esc(ini)}</div>`;
+  h += `<div class="nom">${esc(c.nombre)}</div>`;
+  h += `<div class="edad ${menor ? 'menor' : ''}">${edad != null ? edad + ' años' : 'Edad sin registrar'}</div>`;
+  h += `<div style="margin-top:8px"><span class="pill ${esc(c.estatus)}">${esc(c.estatus)}</span> <span class="muted">${esc(c.id_cliente)}</span></div>`;
+  if (!activo) h += `<div class="motivo"><b>Motivo del bloqueo:</b><br>${esc(c.motivo_bloqueo || 'Sin motivo registrado')}</div>`;
+  h += `<div class="stats"><div><b id="vTot">${r.visitas.total}</b><span>Visitas</span></div>
+        <div class="ult"><b>${r.visitas.ultima ? esc(fechaBonita(r.visitas.ultima)) : 'Primera visita'}</b><span>Última visita</span></div></div>`;
+  if (activo) h += `<button class="btn verde" id="bEntrada" onclick="registrarEntrada('${c.id_cliente}', ${menor})">✔ Registrar entrada</button>`;
+  if (modo === 'escanear') {
+    h += `<div class="btns"><button class="btn sec" onclick="verFicha('${c.id_cliente}')">Ver ficha</button><button class="btn" onclick="abrirLector()">📷 Escanear otro</button></div>`;
+  } else {
+    h += `<div class="datos">
+      ${dato('Teléfono', telBonito(c.telefono))}${dato('Nacimiento', fechaBonita(c.fecha_nacimiento))}${dato('Residencia', c.residencia)}
+      ${dato('Emergencia', [c.contacto_emergencia, telBonito(c.tel_emergencia)].filter(Boolean).join(' · '))}
+      ${dato('Música', c.musica)}${dato('Eventos', c.eventos)}${dato('Comidas', c.comidas)}
+      ${dato('Notas internas', c.notas)}${dato('Registro', [c.sede_registro, fechaBonita(c.fecha_registro), c.registrado_por].filter(Boolean).join(' · '))}
+      ${dato('Aviso de privacidad', c.acepto_aviso ? c.acepto_aviso + ' · ' + fechaBonita(c.fecha_aviso) : '')}${dato('Última edición', c.actualizado)}</div>
+      <div class="btns"><button class="btn sec" onclick="mostrarCredencial(FICHA)">🪪 Ver QR</button><button class="btn sec" onclick="editar(FICHA)">✏️ Editar</button></div>
+      ${activo ? `<button class="btn rojo" onclick="bloquear('${c.id_cliente}')">⛔ Bloquear cliente</button>`
+               : `<button class="btn verde" onclick="desbloquear('${c.id_cliente}')">↩︎ Desbloquear cliente</button>`}`;
+  }
+  return h + `</div></div>`;
+}
+function dato(k, v) { return v ? `<div><span>${esc(k)}</span><span>${esc(v)}</span></div>` : ''; }
+
+async function registrarEntrada(id, menor) {
+  if (menor && !confirm('Esta persona es MENOR DE EDAD. ¿Seguro que quieres registrar su entrada?')) return;
+  const r = await staff('entrada', { id });
+  if (!r.ok) { toast(r.error || r.msg); return; }
+  const b = $('#bEntrada'); if (b) { b.textContent = '✔ Entrada registrada'; b.disabled = true; }
+  const t = $('#vTot'); if (t) t.textContent = r.visitas.total;
+  toast('Entrada registrada en ' + S.sede);
+}
+
+/* ---------- buscar / ficha ---------- */
+let tBus = null, FICHA = null;
+function buscarDiferido() { clearTimeout(tBus); tBus = setTimeout(buscar, 400); }
+async function buscar() {
+  const q = $('#qBuscar').value.trim();
+  $('#ficha').innerHTML = '';
+  if (q.length < 2) { $('#bResultados').innerHTML = ''; return; }
+  const r = await staff('buscar', { q }, { silencio: true });
+  if (!r.ok) { $('#bResultados').innerHTML = '<div class="err">' + esc(r.error || r.msg) + '</div>'; return; }
+  $('#bResultados').innerHTML = r.resultados.length ? r.resultados.map(c =>
+    `<div class="item" onclick="verFicha('${c.id_cliente}')"><div class="n">${esc(c.nombre)}<small>${esc(telBonito(c.telefono))} · ${esc(c.id_cliente)} · ${esc(c.sede_registro)}</small></div><span class="pill ${esc(c.estatus)}">${esc(c.estatus)}</span></div>`
+  ).join('') : '<p class="muted">No encontramos a nadie con eso.</p>';
+}
+async function verFicha(id) {
+  tab('tBuscar');
+  const r = await staff('ficha', { id });
+  if (!r.ok) { toast(r.error || r.msg); return; }
+  FICHA = r.cliente;
+  $('#bResultados').innerHTML = '';
+  $('#ficha').innerHTML = veredicto(r, 'ficha');
+}
+async function bloquear(id) {
+  const motivo = prompt('¿Por qué se bloquea a este cliente? (lo verá el equipo al escanear)');
+  if (motivo == null) return;
+  if (!motivo.trim()) { toast('Escribe el motivo del bloqueo.'); return; }
+  const r = await staff('estatus', { id, estatus: 'Bloqueado', motivo });
+  if (!r.ok) { toast(r.error || r.msg); return; }
+  toast('Cliente bloqueado'); verFicha(id);
+}
+async function desbloquear(id) {
+  if (!confirm('¿Desbloquear a este cliente? Podrá volver a entrar.')) return;
+  const r = await staff('estatus', { id, estatus: 'Activo' });
+  if (!r.ok) { toast(r.error || r.msg); return; }
+  toast('Cliente desbloqueado'); verFicha(id);
+}
+
+/* ---------- registrar / editar ---------- */
+function limpiarForm() {
+  CAMPOS.forEach(k => $('#f_' + k).value = '');
+  fotoNueva = ''; pintarFoto('');
+  $('#fAviso').checked = false; $('#fErr').textContent = '';
+}
+function pintarFoto(src) {
+  const p = $('#fFotoPrev');
+  if (src) { p.outerHTML = `<img class="prev" id="fFotoPrev" src="${src}" alt="Foto">`; }
+  else if (p.tagName === 'IMG') { p.outerHTML = '<div class="prev" id="fFotoPrev">👤</div>'; }
+}
+function editar(c) {
+  editandoId = c.id_cliente;
+  limpiarForm();
+  CAMPOS.forEach(k => $('#f_' + k).value = c[k] || '');
+  if (c.foto) pintarFoto(c.foto);
+  $('#fTitulo').textContent = 'Editar cliente'; $('#fSub').textContent = c.nombre + ' · ' + c.id_cliente;
+  $('#fAvisoBox').classList.add('hide'); $('#fCancelar').classList.remove('hide');
+  $('#fGuardar').textContent = 'Guardar cambios';
+  tab('tRegistrar');
+}
+function cancelarEdicion() {
+  const id = editandoId; modoNuevo();
+  if (id) verFicha(id);
+}
+function modoNuevo() {
+  editandoId = null; limpiarForm();
+  $('#fTitulo').textContent = 'Registrar cliente nuevo'; $('#fSub').textContent = 'Llena los datos junto con el cliente.';
+  $('#fAvisoBox').classList.remove('hide'); $('#fCancelar').classList.add('hide');
+  $('#fGuardar').textContent = 'Guardar y generar credencial';
+}
+async function guardarCliente(forzar) {
+  const cliente = {}; CAMPOS.forEach(k => cliente[k] = $('#f_' + k).value.trim());
+  $('#fErr').textContent = '';
+  if (cliente.nombre.length < 3) return $('#fErr').textContent = 'Escribe el nombre completo.';
+  if (!cliente.fecha_nacimiento) return $('#fErr').textContent = 'Escribe la fecha de nacimiento.';
+  if (cliente.telefono.replace(/\D/g, '').length < 10) return $('#fErr').textContent = 'El teléfono debe tener 10 dígitos.';
+  if (!editandoId && !$('#fAviso').checked) return $('#fErr').textContent = 'El cliente tiene que aceptar el aviso de privacidad.';
+  if (!editandoId && !fotoNueva && !confirm('No tomaste foto. Sin foto el equipo no podrá reconocerlo al escanear. ¿Guardar así?')) return;
+  cliente.acepto_aviso = $('#fAviso').checked;
+  const r = editandoId ? await staff('editar', { id: editandoId, cliente, foto: fotoNueva, forzar: !!forzar })
+                       : await staff('registrar', { cliente, foto: fotoNueva, forzar: !!forzar });
+  if (!r.ok && r.error === 'DUPLICADO') {
+    const d = r.duplicado;
+    if (confirm(`⚠️ Ya existe un cliente con ese teléfono:\n\n${d.nombre} (${d.id_cliente})\n\nAceptar = ver su ficha\nCancelar = seguir aquí`)) { verFicha(d.id_cliente); return; }
+    if (confirm('¿Guardar de todos modos con el mismo teléfono? (solo si de verdad es otra persona)')) return guardarCliente(true);
+    return;
+  }
+  if (!r.ok) { $('#fErr').textContent = r.error || r.msg; return; }
+  const eraEdicion = !!editandoId;
+  modoNuevo();
+  if (eraEdicion) { toast('Cambios guardados'); verFicha(r.cliente.id_cliente); }
+  else { toast('¡Cliente registrado!'); mostrarCredencial(r.cliente); }
+}
+
+/* foto: cámara o archivo */
+let camStream = null, camModo = 'user';
+async function abrirCamaraFoto() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $('#fFotoFile').setAttribute('capture', 'user'); $('#fFotoFile').click(); return; }
+  $('#mCam').classList.remove('hide');
+  await arrancarCam();
+}
+async function arrancarCam() {
+  if (camStream) camStream.getTracks().forEach(t => t.stop());
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: camModo, width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
+    const v = $('#camVideo'); v.srcObject = camStream; v.classList.toggle('trasera', camModo !== 'user');
+  } catch (e) {
+    console.error(e); cerrarCamaraFoto();
+    toast('No se pudo abrir la cámara. Usa "Subir foto".', 3500);
+  }
+}
+function voltearCamara() { camModo = camModo === 'user' ? 'environment' : 'user'; arrancarCam(); }
+async function capturarFoto() {
+  const v = $('#camVideo'); if (!v.videoWidth) return;
+  const lado = Math.min(v.videoWidth, v.videoHeight), cv = document.createElement('canvas');
+  cv.width = cv.height = lado;
+  const x = cv.getContext('2d');
+  if (camModo === 'user') { x.translate(lado, 0); x.scale(-1, 1); } // que se vea como en el espejo
+  x.drawImage(v, (v.videoWidth - lado) / 2, (v.videoHeight - lado) / 2, lado, lado, 0, 0, lado, lado);
+  fotoNueva = await achicarFoto(cv.toDataURL('image/jpeg', 0.92));
+  pintarFoto(fotoNueva); cerrarCamaraFoto();
+}
+function cerrarCamaraFoto() {
+  if (camStream) camStream.getTracks().forEach(t => t.stop()); camStream = null;
+  $('#mCam').classList.add('hide');
+}
+async function fotoDeArchivo(inp) {
+  const f = inp.files && inp.files[0]; inp.value = '';
+  if (!f) return;
+  try { fotoNueva = await achicarFoto(f); pintarFoto(fotoNueva); } catch (_) { toast('No se pudo leer esa imagen.'); }
+}
+
+/* ---------- credencial ---------- */
+async function mostrarCredencial(c) {
+  cargando(true);
+  try { credActual = c; credPng = await dibujarCredencial(Object.assign({}, c)); }
+  finally { cargando(false); }
+  $('#credImg').src = credPng;
+  const nombre1 = String(c.nombre || '').split(' ')[0];
+  const txt = `¡Hola ${nombre1}! 🎬 Ya eres parte de Cineteca Trikles · La casa del arte.\nTu número de cliente es ${c.id_cliente}.\nTu credencial con QR está aquí (con tu teléfono y fecha de nacimiento): ${URL_CREDENCIAL}\nPreséntala en la entrada. ¡Te esperamos!`;
+  $('#credWa').href = 'https://wa.me/52' + String(c.telefono || '').replace(/\D/g, '').slice(-10) + '?text=' + encodeURIComponent(txt);
+  $('#credWa').classList.toggle('hide', String(c.telefono || '').replace(/\D/g, '').length < 10);
+  $('#mCred').classList.remove('hide');
+}
+function credDescargar() { descargar(credPng, nombreArchivo(credActual)); }
+function credCompartir() { compartirImagen(credPng, nombreArchivo(credActual), 'Credencial Cineteca Trikles · ' + credActual.id_cliente); }
+
+/* ---------- entradas del día ---------- */
+async function cargarHoy() {
+  const r = await staff('entradasHoy', { sede: $('#hSede').value, fecha: $('#hFecha').value });
+  if (!r.ok) { $('#hLista').innerHTML = '<div class="err">' + esc(r.error || r.msg) + '</div>'; return; }
+  $('#hTotal').textContent = r.entradas.length;
+  $('#hTxt').textContent = (r.entradas.length === 1 ? 'entrada' : 'entradas') + ' · ' + (r.sede === 'Todas' ? 'todas las sedes' : r.sede) + ' · ' + fechaBonita(r.fecha);
+  $('#hLista').innerHTML = r.entradas.length ? r.entradas.map(e =>
+    `<div class="item" onclick="verFicha('${esc(e.id_cliente)}')"><div class="hora">${esc(e.hora)}</div><div class="n">${esc(e.nombre)}<small>${esc(e.id_cliente)}${r.sede === 'Todas' ? ' · ' + esc(e.sede) : ''} · registró ${esc(e.registrado_por)}</small></div></div>`
+  ).join('') : '<p class="muted">Todavía no hay entradas.</p>';
+}
+
+iniciar();
+</script>
+</body>
+</html>
